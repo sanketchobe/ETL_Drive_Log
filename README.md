@@ -46,8 +46,9 @@ Important components.
     - Snowflake supports the storage of data as historical information. It supports the storage as a cloud service and in different formats. 
     - The data storage for historical data can be retrived later for the analyzing the historical data and building out the functions, models for data analysis. 
 
-I am explaining my ETL pipeline using the following components and architecture. 
-Pre-requisites:
+I am explaining my ETL pipeline using the following components and architecture. The PySpark code has 3 steps and explained in the following steps.
+
+*Pre-requisites*
 
 1. Install and configure Spark. 
 2. Install and configure Snowflake - free/enterprise set up.
@@ -63,9 +64,9 @@ Additional Pre-requisites:
 - Vehicle: This table is a dimensional table containing the attributes for Vehicle like Vehicle name or Vehicle type.
 - Function: This table is a dimensional table containing the attributes for Function, like function name, function type, etc. 
 - Status: This table is a dimensional table containing the attributes for Status, like status (Start, End), status type, etc. 
-- Time: This table is a dimensional table containing the time related attributes like year, date, month, day, hour, minutes, and timestamp.
+- Log_Time: This table is a dimensional table containing the time related attributes like year, date, month, day, hour, minutes, and timestamp.
 - Driver_Log: This table is a fact table containing the keys from each of the dimensional table like vehicle_id, function_id etc. This table represents the core data for drive logs for all time.
-- Drive_log_Daily: This table is a derived table or view which represents the drive log on daily basis. 
+- Drive_Log_Daily: This table is a derived table or view which represents the drive log on daily basis. 
 - Drive_Hotspots: This table represents aggregated fact or view showing the drive hotspots for any function. We can derive the daily hotspots,monthly hotspots, etc. which can be further used by Data Scientists to perform analysis or visualize data. 
 
 *ETL Pipeline*
@@ -82,7 +83,11 @@ Additional Pre-requisites:
 - Configure the Snowflake connection json wth the corresponding user credentials, snowflake account and url.
 - Configure the AWS connection json with the corresponding AWS credentials
 - Save the Data files under the required path or make the necessary changes to add the path in data source json. 
-- Submit the code for execution run. 
+- Configure IDE like Pycharm to link PySpark by setting the required environment variables and config files.
+- Change the path of the spark-snowflake jdbc jars instead of the local jar path in the code to initiate spark session. 
+- Submit the code for execution run using Pycharm IDE run options.
+- I have not included the steps to configure AWS Services for this pipeline and are in scope for enhance of this project. 
+- (Note: All install and configure steps for Pyspark, Snowflake, AWS and Pycharm are available online.)
 
 **Output - Datawarehouse**
 
