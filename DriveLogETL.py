@@ -35,7 +35,12 @@ def create_spark_session():
 
 
 def data_Extract(spark, data_source, data,error_log_path):
-
+    '''
+        Extract the data from multiple sources and have following components..
+        Date: Date of the log data
+        Hour: Hour at which the log were captured
+        File_path: Path of the file name for log data
+    '''
     if data_source =='csv':
         if 'date' in data:
             date = str(data['date'])
@@ -74,8 +79,13 @@ def data_Extract(spark, data_source, data,error_log_path):
 
 
 def data_Transform(spark, extract_data):
+    '''
+        Transform the data from multiple sources and create LR dataframe for following tables..
+        Drive_Log: current lod data
+        Drive_log_Daily: log for the current date
+        Drive_Hotspots: Drive hotspots in the current log data
+    '''
     date, hour,df = extract_data[0], extract_data[1], extract_data[2]
-    print(date, hour)
     df.createOrReplaceTempView("extract_data")
 
     lr_df1 = spark.sql("""select v_id,
@@ -105,7 +115,7 @@ def data_Transform(spark, extract_data):
                                  status,
                                  date,   
                                  hour, 
-                                 round(time *60) as time, 
+                                 cast(time as float) as time, 
                                  to_timestamp(concat(cast(date as string), ' ', cast(hour as string),':', 
                                  cast(minutes as string))) as execution_timestmp,
                                  rank() OVER (Partition by v_id, fn_id, status order by time desc) as log_rank 
@@ -130,7 +140,19 @@ def data_Transform(spark, extract_data):
     return (lr_df1, lr_df2, lr_df4)
 
 def create_database(snow_connection, error_log_path):
-    print(snow_connection)
+    '''
+    Create the datawarehouse and tables..
+    Drive_Analysis_WH : Datawarehouse
+    Drive_DB: Database under Datawarehouse
+    Drive_USE_Log: Schema under datawarehouse and database
+    Vehicle: Dimension table for vehicle details
+    Function: Dimension table for function details
+    Status: Dimension table for function status details
+    Log_Time: Dimension table for log time
+    Drive_Log: Fact table for drive log details
+    Drive_Log_Daily: Table/View containing the information about daily log captured
+    Drive_Hotspots: Table/View for hotspots captured for current log data
+    '''
 
     snow_connection.cursor().execute("use role ACCOUNTADMIN")
     snow_connection.cursor().execute("CREATE WAREHOUSE IF NOT EXISTS Drive_Analysis_WH")
@@ -173,6 +195,18 @@ def create_database(snow_connection, error_log_path):
 
     try:
         snow_connection.cursor().execute("CREATE TABLE IF NOT EXISTS "
+                                         "Log_Time(log_date DATE,"
+                                         "log_month varchar(2),"
+                                         "log_day varchar(2),"
+                                         "log_hour varchar(2),"
+                                         "log_timestamp timestamp)"
+                                         )
+    except Exception as excpt:
+        error_log_path.write(str(excpt))
+        print(str(excpt))
+
+    try:
+        snow_connection.cursor().execute("CREATE TABLE IF NOT EXISTS "
                                          "Drive_Log( vehicle_Id varchar(30),"
                                          "function_Id varchar(30), "
                                          "status varchar(10),"
@@ -200,7 +234,7 @@ def create_database(snow_connection, error_log_path):
         snow_connection.cursor().execute("CREATE TABLE IF NOT EXISTS "
                                          "Drive_Hotspots(vehicle_Id varchar(30),"
                                          "function_Id varchar(30),"
-                                         "execution_time varchar(10),"
+                                         "execution_time varchar(30),"
                                          "log_timestamp timestamp)"
                                          )
     except Exception as excpt:
@@ -209,6 +243,13 @@ def create_database(snow_connection, error_log_path):
 
 
 def load_tables(snow_connect,spark, full_tb, curr_tb, hotspot_tb, error_log_path):
+    '''
+    Load the data in the following snowflake tables based on the spark-snowflake connection
+    Drive_Log: Fact table for drive log details
+    Drive_Log_Daily: Table/View containing the information about daily log captured
+    Drive_Hotspots: Table/View for hotspots captured for current log data
+    '''
+
     spark_conf = SparkConf().setMaster('local').setAppName('Drive_Log')
     snowflake_source = "net.snowflake.spark.snowflake"
 
@@ -222,7 +263,6 @@ def load_tables(snow_connect,spark, full_tb, curr_tb, hotspot_tb, error_log_path
         "sfRole":"ACCOUNTADMIN"
     }
 
-    print(sfOptions)
 
     full_tb.show(5)
     curr_tb.show(5)
@@ -254,7 +294,6 @@ def load_tables(snow_connect,spark, full_tb, curr_tb, hotspot_tb, error_log_path
 
 def data_Load(spark, full_tb, curr_tb, hotspot_tb,error_log_path):
     snow_connect = json.load(open('Configs/snow_connect.json'))
-    print(snow_connect)
     snow_connection = snowflake.connector.connect(
         user=snow_connect["userid"],
         password=snow_connect["password"],
