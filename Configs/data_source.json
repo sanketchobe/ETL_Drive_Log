@@ -1,0 +1,9 @@
+{
+	"data_sources": {
+		"csv": {
+			"date": "2020-01-01",
+			"time": "17",
+			"path": "Data/execution_2020-01-01_17.csv"
+		}
+    }
+}
