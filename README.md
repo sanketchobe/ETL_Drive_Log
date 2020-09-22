@@ -57,7 +57,7 @@ Additional Pre-requisites:
 1. Set up and configure AWS EMR and AWS s3 to set up ETL pipeline on AWS. 
 
 **Star Schema for Datawarehouse**
-![Screenshot](/Users/sanketchobe/Desktop/ETL_star_schema.png)
+![Screenshot](ETL_star_schema.png)
 
 *Data Model*
 - Vehicle: This table is a dimensional table containing the attributes for Vehicle like Vehicle name or Vehicle type.
@@ -75,7 +75,7 @@ Additional Pre-requisites:
   
 
 **Software Architecture**
-![Screenshot](/Users/sanketchobe/Desktop/ETL_architecture.png)
+![Screenshot](ETL_architecture.png)
 
 
 Run ETL pipeline
