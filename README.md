@@ -57,7 +57,7 @@ Additional Pre-requisites:
 1. Set up and configure AWS EMR and AWS s3 to set up ETL pipeline on AWS. 
 
 **Star Schema for Datawarehouse**
-![Screenshot](ETL_star_schema.png)
+![Screenshot](ETL_Star_Schema.png)
 
 *Data Model*
 - Vehicle: This table is a dimensional table containing the attributes for Vehicle like Vehicle name or Vehicle type.
@@ -78,7 +78,16 @@ Additional Pre-requisites:
 ![Screenshot](ETL_architecture.png)
 
 
-Run ETL pipeline
+*Run ETL pipeline*
+- Configure the Snowflake connection json wth the corresponding user credentials, snowflake account and url.
+- Configure the AWS connection json with the corresponding AWS credentials
+- Save the Data files under the required path or make the necessary changes to add the path in data source json. 
+- Submit the code for execution run. 
 
+**Output - Datawarehouse**
 
+*Drive Log Details*
+![Screenshot](Drive_Log.png)
 
+*Drive Hotspot Details*
+![Screenshot](Drive_Hotspots.png)
