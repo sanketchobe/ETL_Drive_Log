@@ -97,7 +97,7 @@ def data_Transform(spark, extract_data):
                                 end as date,   
                                 cast({1} as string) as hour, 
                                 time,
-                                from_unixtime(cast(time*60 as string), 'mm:ss.SSSSSS') as minutes
+                                from_unixtime(cast(time as string), 'mm:ss.SSSSSS') as minutes
                            from extract_data""".format(date, hour))
 
     lr_df1.createOrReplaceTempView("curr_tb")
